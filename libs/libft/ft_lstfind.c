@@ -1,0 +1,18 @@
+#include "libft.h"
+
+/*
+**	@brief	finds last element of the list
+**	
+**	@param	lst		pointer to begin of the list
+**	@return	t_list*	pointer to the end of the list
+*/
+t_list	*ft_lstfind(t_list *lst, int x)
+{
+	while (lst)
+	{
+		if (lst->x == x)
+			break ;
+		lst = lst->next;
+	}
+	return (lst);
+}
