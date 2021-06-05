@@ -2,49 +2,55 @@
 
 int	main(int argc, char **argv, char **envp)
 {
-	// pid_t		pid;
-	t_param 	p;
-	
-	p.argv = argv;
-	p.envp = envp;
-	p.cmnds = malloc(sizeof(*p.cmnds) * (argc - 2));
-	if (!p.cmnds)
-		ft_raise_error(NULL);
-	p.cmnds[argc - 3] = NULL;
-	ft_putendl_fd(argv[1], 1);
-	ft_putendl_fd(argv[2], 1);
+	t_param	p;
+
+	inicialize_param(argc, argv, envp, &p);
 	parsing(argc, argv, &p);
-	execve(p.cmnds[0][0], p.cmnds[0], 0);
+	if (pipe(p.fds) < 0)
+		ft_raise_error("NULL");
+	p.pid = fork();
+	if (p.pid)
+		run_father(&p);
+	else
+		run_child(&p);
 	ft_raise_error(NULL);
-	
 }
 
-void	parsing(int argc, char **argv, t_param *p)
+void	run_father(t_param *p)
 {
 	char	*cmnd;
-	int		i;
 
-	if (argc != 5)
-		ft_raise_error("Usage : ./pipex infile cmd1 cmd2 outfile\n");
-	p->infile = open(argv[1], O_RDONLY);
-	if (p->infile < 0)
+	wait(0);
+	if (dup2(p->fds[0], STDIN) < 0)
 		ft_raise_error(NULL);
-	p->outfile = open(argv[--argc], O_WRONLY);
-	if (p->outfile < 0)
+	if (dup2(p->outfile, STDOUT) < 0)
 		ft_raise_error(NULL);
-	i = 1;
-	while (++i < argc)
+	close(p->fds[0]);
+	close(p->fds[1]);
+	cmnd = p->cmnds[1][0];
+	while (get_next_path(p, cmnd, 1))
 	{
-		p->cmnds[i - 2] = ft_split_set(argv[i], " ");
-		if (!p->cmnds[i - 2])
-			ft_raise_error(NULL);
-		cmnd = p->cmnds[i - 2][0];
-		if (ft_strncmp(cmnd, "./", 2) && ft_strncmp(cmnd, "/", 1))
-		{
-			p->cmnds[i - 2][0] = ft_strjoin("/bin/", cmnd);
-			free(cmnd);
-		}
-		ft_putstr_fd("new file to run name: ", 1); // to del
-		ft_putendl_fd(p->cmnds[i - 2][0], 1);
+		execve(p->cmnds[1][0], p->cmnds[1], p->envp);
+		if (errno != 2)
+			break ;
+	}
+}
+
+void	run_child(t_param *p)
+{
+	char	*cmnd;
+
+	if (dup2(p->fds[1], STDOUT) < 0)
+		ft_raise_error(NULL);
+	if (dup2(p->infile, STDIN) < 0)
+		ft_raise_error(NULL);
+	close(p->fds[0]);
+	close(p->fds[1]);
+	cmnd = p->cmnds[0][0];
+	while (get_next_path(p, cmnd, 0))
+	{
+		execve(p->cmnds[0][0], p->cmnds[0], p->envp);
+		if (errno != 2)
+			break ;
 	}
 }
