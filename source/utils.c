@@ -2,8 +2,11 @@
 
 void	inicialize_param(int argc, char **argv, char **envp, t_param *p)
 {
+	if (argc < 5)
+		ft_raise_error("Usage : ./pipex infile cmd1 ... cmdn outfile\n");
 	p->argv = argv;
 	p->envp = envp;
+	p->ind = argc - 4;
 	p->cmnds = malloc(sizeof(*p->cmnds) * (argc - 2));
 	if (!p->cmnds)
 		ft_raise_error(NULL);
@@ -13,9 +16,7 @@ void	inicialize_param(int argc, char **argv, char **envp, t_param *p)
 void	parsing(int argc, char **argv, t_param *p)
 {
 	int	i;
-
-	if (argc != 5)
-		ft_raise_error("Usage : ./pipex infile cmd1 cmd2 outfile\n");
+	
 	p->infile = open(argv[1], O_RDONLY);
 	if (p->infile < 0)
 		ft_raise_error(NULL);

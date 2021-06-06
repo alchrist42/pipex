@@ -23,6 +23,7 @@ typedef struct s_param
 	pid_t	pid;
 	char	**argv;
 	char	**envp;
+	int		ind;
 	char	***cmnds;
 }	t_param;
 
@@ -30,6 +31,7 @@ typedef struct s_param
 int		main(int argc, char **argv, char **envp);
 void	run_father(t_param *p);
 void	run_child(t_param *p);
+void	run_first_child(t_param *p);
 
 // utils.c
 void	inicialize_param(int argc, char **argv, char **envp, t_param *p);
