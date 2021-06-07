@@ -16,7 +16,6 @@ void	pipex(t_param *p)
 
 	inicialize_in(p);
 	inicialize_out(p);
-
 	cmnd = p->cmnds[p->ind][0];
 	while (get_next_path(p, cmnd, p->ind))
 	{
@@ -35,14 +34,13 @@ void	pipex(t_param *p)
 */
 void	inicialize_out(t_param *p)
 {
-	
-	if (p->total_pipes && p->total_pipes != p->ind + 1) // запустить только если это не папка всех папок (для него есть прошлый пайп)
+	if (p->total_pipes && p->total_pipes != p->ind + 1)
 	{
-		if (dup2(p->old_fds_1, STDOUT) < 0) // выход текущей команды заворачиваем со стандартного выхода на прошлый пайп
+		if (dup2(p->old_fds_1, STDOUT) < 0)
 			ft_raise_error(NULL);
 		close(p->old_fds_1);
 	}
-	else if (p->outfile) // для папки меняем выход, если был выходной файл
+	else if (p->outfile)
 		if (dup2(my_open(p, p->outfile, false), STDOUT) < 0)
 			ft_raise_error(NULL);
 }
@@ -56,32 +54,28 @@ void	inicialize_out(t_param *p)
 */
 void	inicialize_in(t_param *p)
 {
-	if (p->ind) // есть потомки
+	if (p->ind)
 	{
 		close(p->fds[0]);
 		p->old_fds_1 = p->fds[1];
 		if (pipe(p->fds) < 0)
 			ft_raise_error("NULL");
 		p->pid = fork();
-		if (p->pid)  // если это папка для текущей пары процессов - то ждем отпрыска
+		if (p->pid)
 		{
 			wait(0);
-			if (dup2(p->fds[0], STDIN) < 0) // и заворачиваем вход со стандартного на результаты работы отпрыска
+			if (dup2(p->fds[0], STDIN) < 0)
 				ft_raise_error(NULL);
 			close(p->fds[0]);
 			close(p->fds[1]);
 		}
-		else	// это отпрыск. но в следующей итерации ему быть папкой
+		else
 		{
 			p->ind--;
 			return (pipex(p));
 		}
-			
 	}
-	else if (p->infile) // меняем вход если был входной файл
-	{
-		// sleep(20);
+	else if (p->infile)
 		if (dup2(my_open(p, p->infile, true), STDIN) < 0)
 			ft_raise_error(NULL);
-	}
 }

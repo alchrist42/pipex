@@ -4,7 +4,7 @@ void	inicialize_param(int argc, char **argv, char **envp, t_param *p)
 {
 	if (argc < 4)
 		ft_raise_error("Usage : ./pipex infile cmd1 ... cmdn outfile\n");
-	p->infile = argv[1]; 
+	p->infile = argv[1];
 	p->outfile = argv[argc - 1];
 	p->argv = argv;
 	p->envp = envp;
@@ -19,7 +19,7 @@ void	inicialize_param(int argc, char **argv, char **envp, t_param *p)
 void	get_commands(int argc, char **argv, t_param *p)
 {
 	int	i;
-	
+
 	i = 1;
 	while (++i < argc - 1)
 	{
@@ -92,7 +92,7 @@ int	get_next_path(t_param *p, char *cmnd, int i)
 int	my_open(t_param *p, char *fname, bool is_infile)
 {
 	int	fd;
-	
+
 	if (is_infile)
 	{
 		fd = open(fname, O_RDONLY);
@@ -105,5 +105,5 @@ int	my_open(t_param *p, char *fname, bool is_infile)
 	}
 	if (fd < 0)
 		ft_raise_error(NULL);
-	return fd;
+	return (fd);
 }
