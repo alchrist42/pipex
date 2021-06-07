@@ -11,3 +11,5 @@ Ihni binni dimi diniwiny anitaime
 Ihni binni dimi dini uan mor taime
 Or ihni binni diniwiny ani taime
 O Ihni binni dini one mor taime
+
+./pipex infile "grep taime" "cat -e" "wc -l" out

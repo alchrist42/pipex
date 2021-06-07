@@ -2,30 +2,26 @@
 
 void	inicialize_param(int argc, char **argv, char **envp, t_param *p)
 {
-	if (argc < 5)
+	if (argc < 4)
 		ft_raise_error("Usage : ./pipex infile cmd1 ... cmdn outfile\n");
+	p->infile = argv[1]; 
+	p->outfile = argv[argc - 1];
 	p->argv = argv;
 	p->envp = envp;
-	p->ind = argc - 4;
+	p->total_pipes = argc - 3;
+	p->ind = p->total_pipes - 1;
 	p->cmnds = malloc(sizeof(*p->cmnds) * (argc - 2));
 	if (!p->cmnds)
 		ft_raise_error(NULL);
-	p->cmnds[argc - 3] = NULL;
+	p->cmnds[p->total_pipes] = NULL;
 }
 
-void	parsing(int argc, char **argv, t_param *p)
+void	get_commands(int argc, char **argv, t_param *p)
 {
 	int	i;
 	
-	p->infile = open(argv[1], O_RDONLY);
-	if (p->infile < 0)
-		ft_raise_error(NULL);
-	p->outfile = open(argv[--argc], O_RDWR | O_CREAT | O_TRUNC, 00700);
-	if (p->outfile < 0)
-		ft_raise_error(NULL);
-	get_paths(p);
 	i = 1;
-	while (++i < argc)
+	while (++i < argc - 1)
 	{
 		p->cmnds[i - 2] = ft_split_set(argv[i], " ");
 		if (!p->cmnds[i - 2])
@@ -52,6 +48,15 @@ void	get_paths(t_param *p)
 	p->paths_len = 0;
 }
 
+/*
+**	@brief	Generator for getting the next path objects.
+** 			Path consist name of the comand and slice path from PATH
+**	
+**	@param	p		pointer to parametrs structure
+**	@param	cmnd	name of the comand
+**	@param	i		command index
+**	@return	int		1 if next path available, else 0
+*/
 int	get_next_path(t_param *p, char *cmnd, int i)
 {
 	static int	z;
@@ -75,4 +80,30 @@ int	get_next_path(t_param *p, char *cmnd, int i)
 	}
 	z++;
 	return (1);
+}
+
+/*
+**	@brief	open input or output files. create output file if not exist
+**	
+**	@param	fname		string with file name
+**	@param	is_infile	is input file
+**	@return	int			file descriptor
+*/
+int	my_open(t_param *p, char *fname, bool is_infile)
+{
+	int	fd;
+	
+	if (is_infile)
+	{
+		fd = open(fname, O_RDONLY);
+		p->infile = NULL;
+	}
+	else
+	{
+		fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, 00700);
+		p->outfile = NULL;
+	}
+	if (fd < 0)
+		ft_raise_error(NULL);
+	return fd;
 }
