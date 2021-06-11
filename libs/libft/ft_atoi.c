@@ -22,11 +22,9 @@ static int	is_space(char ch)
 int	ft_atoi(const char *str)
 {
 	int	x;
-	int	i;
 	int	minus;
 
 	x = 0;
-	i = 0;
 	minus = -1;
 	while (is_space(*str))
 		str++;

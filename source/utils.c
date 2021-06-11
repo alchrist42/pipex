@@ -8,12 +8,12 @@ void	inicialize_param(int argc, char **argv, char **envp, t_param *p)
 	p->outfile = argv[argc - 1];
 	p->argv = argv;
 	p->envp = envp;
-	p->total_pipes = argc - 3;
-	p->ind = p->total_pipes - 1;
+	p->cnt_cmnds = argc - 3;
+	p->ind = p->cnt_cmnds - 1;
 	p->cmnds = malloc(sizeof(*p->cmnds) * (argc - 2));
 	if (!p->cmnds)
 		ft_raise_error(NULL);
-	p->cmnds[p->total_pipes] = NULL;
+	p->cmnds[p->cnt_cmnds] = NULL;
 }
 
 void	get_commands(int argc, char **argv, t_param *p)

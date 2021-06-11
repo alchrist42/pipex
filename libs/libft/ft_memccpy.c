@@ -19,7 +19,7 @@ void	*ft_memccpy(void *dst, const void *src, int c, size_t n)
 	{
 		((unsigned char *)dst)[i] = ((unsigned char *)src)[i];
 		if ((unsigned char)c == ((unsigned char *)src)[i])
-			return ((void *)&dst[i + 1]);
+			return (dst + i + 1);
 		i++;
 	}	
 	return (NULL);

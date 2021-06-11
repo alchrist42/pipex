@@ -24,7 +24,7 @@ typedef struct s_param
 	pid_t	pid;
 	char	**argv;
 	char	**envp;
-	int		total_pipes;
+	int		cnt_cmnds;
 	int		ind;
 	char	***cmnds;
 }	t_param;

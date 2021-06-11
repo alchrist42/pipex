@@ -23,11 +23,9 @@ static int	is_space(char ch)
 long long	ft_atoi_long(const char *str, long long *x)
 {
 	long long	new_x;
-	int			i;
 	int			minus;
 
 	new_x = 0;
-	i = 0;
 	minus = -1;
 	while (is_space(*str))
 		str++;
