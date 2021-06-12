@@ -2,7 +2,7 @@
 
 void	inicialize_param(int argc, char **argv, char **envp, t_param *p)
 {
-	if (argc != 5)
+	if (argc < 4)
 		ft_raise_error("Usage : ./pipex infile cmd1 ... cmdn outfile\n");
 	p->infile = argv[1];
 	p->outfile = argv[argc - 1];
@@ -100,7 +100,7 @@ int	my_open(t_param *p, char *fname, bool is_infile)
 	}
 	else
 	{
-		fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, 00700);
+		fd = open(fname, O_WRONLY | O_APPEND | O_CREAT, 00774);
 		p->outfile = NULL;
 	}
 	if (fd < 0)

@@ -45,4 +45,9 @@ int		my_open(t_param *p, char *fname, bool is_infile);
 // raise_error
 void	ft_raise_error(char *s);
 
+// redirects_bonus
+int		ne_gnl(int fd, char **line, const char *keyword);
+void	left_double_arrow(t_param *p);
+void	child_left_double_arrow(t_param *p, int *fd);
+
 #endif
