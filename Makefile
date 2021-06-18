@@ -1,5 +1,4 @@
 NAME		=	pipex
-NAME_B		=	pipex_b
 
 SRCS_FILES	= 	pipex.c \
 				utils.c \
@@ -27,8 +26,6 @@ LIB = ./libs/libft/libft.a
 
 all:		$(NAME)
 
-bonus:		$(NAME_B)
-
 %.o:		%.c
 			$(CC) $(CFLAGS) $(INCLUDE) -c -g $< -o $@
 		
@@ -36,9 +33,9 @@ $(NAME):	$(OBJS)
 			$(MAKE) -C $(dir $(LIB))
 			$(CC) $(INCLUDE) $(LIB) -o $(NAME) $(OBJS)
 
-$(NAME_B):	$(OBJS_B)
+bonus:		$(OBJS_B)
 			$(MAKE) -C $(dir $(LIB))
-			$(CC) $(INCLUDE) $(LIB) -o $(NAME_B) $(OBJS_B)
+			$(CC) $(INCLUDE) $(LIB) -o $(NAME) $(OBJS_B)
 
 clean:
 			$(RM) $(OBJS) $(OBJS:.o=.d) $(OBJS_B) $(OBJS_B:.o=.d)
@@ -47,7 +44,6 @@ clean:
 fclean:		clean
 			@make -C $(dir $(LIB)) fclean
 			$(RM) $(NAME)
-			$(RM) $(NAME_B)
 
 re:			fclean all
 

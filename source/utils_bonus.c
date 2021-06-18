@@ -2,30 +2,40 @@
 
 void	inicialize_param(int argc, char **argv, char **envp, t_param *p)
 {
-	if (argc < 4)
-		ft_raise_error("Usage : ./pipex infile cmd1 ... cmdn outfile\n");
+	if (argc < 4 || (!ft_strncmp(argv[1], "here_doc", 9) && argc < 5))
+		ft_raise_error("PLZ! use only weird syntax from subject\n", NULL);
 	p->infile = argv[1];
+	p->stop_word = NULL;
+	if (!ft_strncmp(argv[1], "here_doc", 9))
+	{
+		p->infile = NULL;
+		p->stop_word = argv[2];
+	}
 	p->outfile = argv[argc - 1];
 	p->argv = argv;
 	p->envp = envp;
-	p->cnt_cmnds = argc - 3;
+	p->cnt_cmnds = argc - 3 - (bool)p->stop_word;
 	p->ind = p->cnt_cmnds - 1;
-	p->cmnds = malloc(sizeof(*p->cmnds) * (argc - 2));
+	p->cmnds = malloc(sizeof(*p->cmnds) * (p->cnt_cmnds + 1));
 	if (!p->cmnds)
-		ft_raise_error(NULL);
+		ft_raise_error(NULL, NULL);
 	p->cmnds[p->cnt_cmnds] = NULL;
 }
 
 void	get_commands(int argc, char **argv, t_param *p)
 {
 	int	i;
+	int j;
 
-	i = 1;
-	while (++i < argc - 1)
+	i = 2 + (bool)p->stop_word;
+	j = 0;
+	while (i < argc - 1)
 	{
-		p->cmnds[i - 2] = ft_split_set(argv[i], " ");
-		if (!p->cmnds[i - 2])
-			ft_raise_error(NULL);
+		p->cmnds[j] = ft_split_set(argv[i], " ");
+		if (!p->cmnds[j])
+			ft_raise_error(NULL, NULL);
+		i++;
+		j++;
 	}
 }
 
@@ -40,7 +50,7 @@ void	get_paths(t_param *p)
 		{
 			p->paths = ft_split(p->envp[i] + 5, ':');
 			if (!p->paths)
-				ft_raise_error(NULL);
+				ft_raise_error(NULL, NULL);
 			p->paths_len = ft_split_len(p->paths);
 			return ;
 		}
@@ -70,12 +80,14 @@ int	get_next_path(t_param *p, char *cmnd, int i)
 		p->cmnds[i][0] = cmnd;
 		return (0);
 	}
+	if (!z && !ft_is_path(cmnd))
+		z++;
 	if (z)
 	{
 		temp = ft_strjoin(p->paths[z - 1], "/");
 		p->cmnds[i][0] = ft_strjoin(temp, cmnd);
 		if (!temp || !p->cmnds[i][0])
-			ft_raise_error("NULL");
+			ft_raise_error(NULL, NULL);
 		free(temp);
 	}
 	z++;
@@ -89,21 +101,28 @@ int	get_next_path(t_param *p, char *cmnd, int i)
 **	@param	is_infile	is input file
 **	@return	int			file descriptor
 */
-int	my_open(t_param *p, char *fname, bool is_infile)
+int	my_open(t_param *p, char *fname, int mode)
 {
 	int	fd;
 
-	if (is_infile)
+	if (mode == 1)
 	{
 		fd = open(fname, O_RDONLY);
 		p->infile = NULL;
 	}
-	else
+	else if (mode == 2)
+	{
+		fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, 00774);
+		p->outfile = NULL;
+	}
+	else if (mode == 3)
 	{
 		fd = open(fname, O_WRONLY | O_APPEND | O_CREAT, 00774);
 		p->outfile = NULL;
 	}
+	else
+		fd = -1;
 	if (fd < 0)
-		ft_raise_error(NULL);
+		ft_raise_error(NULL, fname);
 	return (fd);
 }

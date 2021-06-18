@@ -10,20 +10,16 @@ int	main(int argc, char **argv, char **envp)
 	pipex(&p);
 }
 
+/*
+**	@brief	recursive runs all commands separated by pipe
+**	
+**	@param	p	pointer to params
+*/
 void	pipex(t_param *p)
 {
-	char	*cmnd;
-
 	inicialize_in(p);
 	inicialize_out(p);
-	cmnd = p->cmnds[p->ind][0];
-	while (get_next_path(p, cmnd, p->ind))
-	{
-		execve(p->cmnds[p->ind][0], p->cmnds[p->ind], p->envp);
-		if (errno != 2)
-			break ;
-	}
-	ft_raise_error(NULL);
+	run_command(p);
 }
 
 /*
@@ -40,13 +36,13 @@ void	inicialize_in(t_param *p)
 		close(p->fds[0]);
 		p->old_fds_1 = p->fds[1];
 		if (pipe(p->fds) < 0)
-			ft_raise_error(NULL);
+			ft_raise_error(NULL, NULL);
 		p->pid = fork();
 		if (p->pid)
 		{
 			wait(0);
 			if (dup2(p->fds[0], STDIN) < 0)
-				ft_raise_error(NULL);
+				ft_raise_error(NULL, NULL);
 			close(p->fds[0]);
 			close(p->fds[1]);
 		}
@@ -57,8 +53,8 @@ void	inicialize_in(t_param *p)
 		}
 	}
 	else if (p->infile)
-		if (dup2(my_open(p, p->infile, true), STDIN) < 0)
-			ft_raise_error(NULL);
+		if (dup2(my_open(p, p->infile, L_ARR), STDIN) < 0)
+			ft_raise_error(NULL, NULL);
 }
 
 /*
@@ -74,10 +70,33 @@ void	inicialize_out(t_param *p)
 		if (p->ind)
 			p->fds[1] = p->old_fds_1;
 		if (dup2(p->fds[1], STDOUT) < 0)
-			ft_raise_error(NULL);
+			ft_raise_error(NULL, NULL);
 		close(p->fds[1]);
 	}
 	else if (p->outfile)
-		if (dup2(my_open(p, p->outfile, false), STDOUT) < 0)
-			ft_raise_error(NULL);
+		if (dup2(my_open(p, p->outfile, R_ARR), STDOUT) < 0)
+			ft_raise_error(NULL, NULL);
+}
+
+/*
+**	@brief	searches and runs the command 
+**			by its name and paths from enviroment
+**	
+**	@param	p	pointer to patams
+*/
+void	run_command(t_param *p)
+{
+	char	*cmnd;
+
+	cmnd = p->cmnds[p->ind][0];
+	while (get_next_path(p, cmnd, p->ind))
+	{
+		if (!access(p->cmnds[p->ind][0], F_OK))
+		{
+			if (!access(p->cmnds[p->ind][0], X_OK))
+				execve(p->cmnds[p->ind][0], p->cmnds[p->ind], p->envp);
+			break ;
+		}
+	}
+	ft_raise_error(NULL, p->cmnds[p->ind][0]);
 }

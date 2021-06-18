@@ -31,13 +31,13 @@ void	left_double_arrow(t_param *p)
 	int	fd[2];
 
 	if (pipe(fd) < 0)
-		ft_raise_error(NULL);
+		ft_raise_error(NULL, NULL);
 	p->pid = fork();
 	if (p->pid)
 	{
 		wait(0);
 		if (dup2(fd[0], STDIN) < 0)
-			ft_raise_error(NULL);
+			ft_raise_error(NULL, NULL);
 		close(fd[0]);
 		close(fd[1]);
 	}
@@ -54,9 +54,9 @@ void	child_left_double_arrow(t_param *p, int *fd)
 	while (res)
 	{
 		ft_putstr_fd("heredoc> ", 1);
-		res = ne_gnl(0, &line, p->infile);
+		res = ne_gnl(0, &line, p->stop_word);
 		if (res < 0)
-			ft_raise_error(NULL);
+			ft_raise_error(NULL, NULL);
 		if (res)
 			ft_putendl_fd(line, fd[1]);
 		free(line);

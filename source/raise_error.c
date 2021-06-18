@@ -5,15 +5,23 @@
 **	
 **	@param	s	pointer to string with error message
 */
-void	ft_raise_error(char *s)
+void	ft_raise_error(char *msg, char *errno_msg)
 {
-	ft_putstr_fd("Error\n", 2);
-	if (s)
-		ft_putstr_fd(s, 2);
+	// ft_putstr_fd("Error\n", 2);
+	if (msg)
+		ft_putstr_fd(msg, 2);
 	else
-		perror(NULL);
+		perror(errno_msg);
 	if (errno)
 		exit (errno);
 	else
-		exit(errno);
+		exit(1);
+}
+
+int	ft_is_path(char *s)
+{
+	while(*s && !ft_isalnum(*s))
+		if (*s++ == '/')
+			return (1);
+	return (0);
 }
