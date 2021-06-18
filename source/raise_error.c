@@ -7,9 +7,8 @@
 */
 void	ft_raise_error(char *msg, char *errno_msg)
 {
-	// ft_putstr_fd("Error\n", 2);
 	if (msg)
-		ft_putstr_fd(msg, 2);
+		ft_putendl_fd(msg, 2);
 	else
 		perror(errno_msg);
 	if (errno)
@@ -18,9 +17,15 @@ void	ft_raise_error(char *msg, char *errno_msg)
 		exit(1);
 }
 
+/*
+**	@brief	checks if the program name starts from character '/'
+**	
+**	@param	s	pointer to string
+**	@return	int	1 if is path
+*/
 int	ft_is_path(char *s)
 {
-	while(*s && !ft_isalnum(*s))
+	while (*s && !ft_isalnum(*s))
 		if (*s++ == '/')
 			return (1);
 	return (0);

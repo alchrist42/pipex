@@ -98,5 +98,5 @@ void	run_command(t_param *p)
 			break ;
 		}
 	}
-	ft_raise_error(NULL, p->cmnds[p->ind][0]);
+	ft_raise_error(ft_strjoin("Command not found: ", cmnd), NULL);
 }

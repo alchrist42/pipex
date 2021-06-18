@@ -25,7 +25,7 @@ void	inicialize_param(int argc, char **argv, char **envp, t_param *p)
 void	get_commands(int argc, char **argv, t_param *p)
 {
 	int	i;
-	int j;
+	int	j;
 
 	i = 2 + (bool)p->stop_word;
 	j = 0;

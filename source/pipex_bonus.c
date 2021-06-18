@@ -46,11 +46,8 @@ void	inicialize_in(t_param *p)
 			close(p->fds[0]);
 			close(p->fds[1]);
 		}
-		else
-		{
-			p->ind--;
+		else if (p->ind-- > -2)
 			return (pipex(p));
-		}
 	}
 	else if (p->stop_word)
 		left_double_arrow(p);
@@ -75,14 +72,14 @@ void	inicialize_out(t_param *p)
 			ft_raise_error(NULL, NULL);
 		close(p->fds[1]);
 	}
-	else if (p->outfile && !p->stop_word)
+	else if (p->outfile && p->stop_word)
 	{
-		if (dup2(my_open(p, p->outfile, R_ARR), STDOUT) < 0)
+		if (dup2(my_open(p, p->outfile, R_D_ARR), STDOUT) < 0)
 			ft_raise_error(NULL, NULL);
 	}
 	else if (p->outfile)
 	{
-		if (dup2(my_open(p, p->outfile, R_D_ARR), STDOUT) < 0)
+		if (dup2(my_open(p, p->outfile, R_ARR), STDOUT) < 0)
 			ft_raise_error(NULL, NULL);
 	}
 }
@@ -107,5 +104,5 @@ void	run_command(t_param *p)
 			break ;
 		}
 	}
-	ft_raise_error(NULL, p->cmnds[p->ind][0]);
+	ft_raise_error(ft_strjoin("Command not found: ", cmnd), NULL);
 }
